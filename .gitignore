@@ -2,6 +2,7 @@
 .bin/
 .springBeans
 .classpath
+.project
 
 target/
 pom.xml.tag
