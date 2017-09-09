@@ -17,6 +17,7 @@
 	<modules>
 		<module>discovery-service</module>
 		<module>shoppingcard-service</module>
+		<module>shoppinglogic-service</module>
 	</modules>
 
 	<properties>

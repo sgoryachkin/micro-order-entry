@@ -16,7 +16,7 @@ public class ShoppingCardControllerV1 {
     private ShoppingCardService shoppingCardService;
 
     @RequestMapping(path = "/events", method = RequestMethod.POST)
-    public void addCartEvent(@RequestBody CardEvent cartEvent) throws Exception {
+    public void addCartEvent(@RequestBody CardEvent cartEvent) {
         shoppingCardService.addCartEvent(cartEvent);
     }
     
