@@ -2,6 +2,7 @@ package org.sego.moe;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,7 +17,7 @@ public class ShoppingLogicApplication {
 		SpringApplication.run(ShoppingLogicApplication.class, args);
 	}
 	
-	//@LoadBalanced
+	@LoadBalanced
     @Bean
     RestTemplate restTemplate() {
         return new RestTemplate();
