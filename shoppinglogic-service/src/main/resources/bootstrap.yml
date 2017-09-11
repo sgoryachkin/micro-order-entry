@@ -3,3 +3,8 @@ server:
 spring:
   application:
     name: shopping-logic-service
+  cloud:
+    stream:
+      bindings:
+        cardsource:
+          group: shoppinglogic

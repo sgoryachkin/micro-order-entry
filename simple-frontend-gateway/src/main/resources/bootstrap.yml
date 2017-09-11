@@ -3,3 +3,8 @@ server:
 spring:
   application:
     name: simple-frontend-geteway
+  cloud:
+    stream:
+      bindings:
+        cardsource:
+          group: frontend
