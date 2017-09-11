@@ -1,0 +1,5 @@
+server:
+  port: 8873
+spring:
+  application:
+    name: simple-frontend-geteway

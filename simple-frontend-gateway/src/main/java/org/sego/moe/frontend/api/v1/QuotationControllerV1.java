@@ -1,23 +1,23 @@
-package org.sego.moe.api.v1;
+package org.sego.moe.frontend.api.v1;
 
-import org.sego.moe.commons.model.CardEvent;
-import org.sego.moe.service.ShoppingCardService;
+import org.sego.moe.frontend.model.SalesOrder;
+import org.sego.moe.frontend.service.CardOutputEventSink;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(path = "/v1")
-public class ShoppingCardControllerV1 {
-
+public class QuotationControllerV1 {
+	
 	@Autowired
-    private ShoppingCardService shoppingCardService;
+	CardOutputEventSink quotationService;
 
-    @RequestMapping(path = "/events", method = RequestMethod.POST)
-    public void addCartEvent(@RequestBody CardEvent cartEvent) {
-        shoppingCardService.addCartEvent(cartEvent);
+
+    @RequestMapping(path = "/quote/{quoteId}", method = RequestMethod.GET)
+    public SalesOrder getQuote(String quoteId) {
+    	return quotationService.getSalesOrder(Long.valueOf(quoteId));
     }
     
     @RequestMapping(path = "/hello", method = RequestMethod.GET)

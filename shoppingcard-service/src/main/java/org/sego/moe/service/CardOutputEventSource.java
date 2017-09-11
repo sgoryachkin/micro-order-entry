@@ -1,6 +1,6 @@
 package org.sego.moe.service;
 
-import org.sego.moe.model.CardEvent;
+import org.sego.moe.commons.model.CardEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.messaging.support.MessageBuilder;

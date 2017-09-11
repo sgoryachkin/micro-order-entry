@@ -1,6 +1,6 @@
 package org.sego.moe.service;
 
-import org.sego.moe.model.CardEvent;
+import org.sego.moe.commons.model.CardEvent;
 
 public interface ShoppingCardService {
 	

@@ -3,7 +3,7 @@ package org.sego.moe.service;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.sego.moe.model.CardEvent;
+import org.sego.moe.commons.model.CardEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

@@ -1,8 +1,11 @@
-package org.sego.moe.model;
+package org.sego.moe.commons.model;
 
 import java.util.Map;
 
-public class OrderItem {
+public class OrderItemChange {
+	
+	public static final Long PARENT_OI = 0l;
+	public static final Long QUANTITY = 1l;
 	
 	private Long id;
 	private Long offerId;
