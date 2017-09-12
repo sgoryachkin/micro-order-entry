@@ -7,14 +7,14 @@ public class OrderItemChange {
 	public static final Long PARENT_OI = 0l;
 	public static final Long QUANTITY = 1l;
 	
-	private Long id;
+	private String id;
 	private Long offerId;
 	private Map<Long, Object> attributes;
 	
-	public Long getId() {
+	public String getId() {
 		return id;
 	}
-	public void setId(Long id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 	public Long getOfferId() {

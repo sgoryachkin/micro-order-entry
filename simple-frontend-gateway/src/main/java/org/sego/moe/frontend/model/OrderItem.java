@@ -5,21 +5,14 @@ import java.util.List;
 public class OrderItem {
 	
 	private String id;
+	private String parentId;
+	private String offerId;
 	private String name;
-	private Integer quontity;
+	private Integer quantity;
 	private List<OrderItem> orderItems;
-	
-	
 	
 	public OrderItem() {
 		super();
-	}
-
-	public OrderItem(String id, String name, Integer quontity) {
-		super();
-		this.id = id;
-		this.name = name;
-		this.quontity = quontity;
 	}
 	
 	public String getId() {
@@ -34,11 +27,11 @@ public class OrderItem {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public Integer getQuontity() {
-		return quontity;
+	public Integer getQuantity() {
+		return quantity;
 	}
-	public void setQuontity(Integer quontity) {
-		this.quontity = quontity;
+	public void setQuantity(Integer quantity) {
+		this.quantity = quantity;
 	}
 	public List<OrderItem> getOrderItems() {
 		return orderItems;
@@ -46,7 +39,21 @@ public class OrderItem {
 	public void setOrderItems(List<OrderItem> orderItems) {
 		this.orderItems = orderItems;
 	}
-	
-	
+
+	public String getOfferId() {
+		return offerId;
+	}
+
+	public void setOfferId(String offerId) {
+		this.offerId = offerId;
+	}
+
+	public String getParentId() {
+		return parentId;
+	}
+
+	public void setParentId(String parentId) {
+		this.parentId = parentId;
+	}
 	
 }
