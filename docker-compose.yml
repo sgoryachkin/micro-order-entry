@@ -1,5 +1,9 @@
 rabbitmq:
   image: rabbitmq:management
   ports:
-    - 5672:5672
-    - 15672:15672
+  - 5672:5672
+  - 15672:15672
+mongo:
+  image: mongo:3.4
+  ports:
+  - 27017:27017

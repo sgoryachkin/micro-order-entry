@@ -19,10 +19,5 @@ public class ShoppingCardControllerV1 {
     public void addCartEvent(@RequestBody CardEvent cartEvent) {
         shoppingCardService.addCartEvent(cartEvent);
     }
-    
-    @RequestMapping(path = "/hello", method = RequestMethod.GET)
-    public String hello() throws Exception {
-        return "Hello";
-    }
 
 }

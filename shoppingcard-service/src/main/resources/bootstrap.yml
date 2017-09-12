@@ -3,3 +3,6 @@ server:
 spring:
   application:
     name: shopping-cart-service
+  data:
+    mongodb:
+      database: sales-order-messages
