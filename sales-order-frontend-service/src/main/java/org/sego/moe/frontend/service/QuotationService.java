@@ -18,6 +18,7 @@ import org.sego.moe.sales.order.edit.commons.model.OrderItemChange;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.annotation.StreamListener;
+import org.springframework.http.ResponseEntity;
 import org.springframework.integration.support.locks.DefaultLockRegistry;
 import org.springframework.integration.support.locks.LockRegistry;
 import org.springframework.stereotype.Component;
@@ -61,38 +62,50 @@ public class QuotationService {
 		restTemplate.postForEntity("http://sales-order-edit-eventstore-service/v1/events", event, String.class);
 	}
 
+	private void applyEventToSalesOrder(SalesOrderEditEvent message, SalesOrder card) {
+		card.setId(message.getCardId().toString());
+		if (card.getOrderItems() == null) {
+			card.setOrderItems(new CopyOnWriteArrayList<>());
+		}
+
+		List<OrderItem> ois = message.getOrderItems().stream().map(oic -> mapOrderItem(oic))
+				.filter(oi -> oi.getParentId() == null).collect(Collectors.toList());
+		card.getOrderItems().addAll(ois);
+
+		card.getOrderItems().stream().forEach(new Consumer<OrderItem>() {
+
+			@Override
+			public void accept(OrderItem t) {
+				List<OrderItem> ois = message.getOrderItems().stream().map(oic -> mapOrderItem(oic))
+						.filter(oi -> t.getId().equals(oi.getParentId())).collect(Collectors.toList());
+				System.out.println("ois: " + ois);
+				if (!ois.isEmpty()) {
+					if (t.getOrderItems() == null) {
+						t.setOrderItems(new CopyOnWriteArrayList<>());
+					}
+					t.getOrderItems().addAll(ois);
+				}
+			}
+		});
+	}
+
 	private void applyEvent(SalesOrderEditEvent message) {
-		SalesOrder card = storage.putIfAbsent(message.getCardId(), new SalesOrder());
+		SalesOrder card = storage.putIfAbsent(message.getCardId(), restoreFromEvents(message.getCardId()));
 		Lock lock = lockRegistry.obtain(card);
 		try {
 			lock.lock();
-			card.setId(message.getCardId().toString());
-			if (card.getOrderItems() == null) {
-				card.setOrderItems(new CopyOnWriteArrayList<>());
-			}
-
-			List<OrderItem> ois = message.getOrderItems().stream().map(oic -> mapOrderItem(oic))
-					.filter(oi -> oi.getParentId() == null).collect(Collectors.toList());
-			card.getOrderItems().addAll(ois);
-
-			card.getOrderItems().stream().forEach(new Consumer<OrderItem>() {
-
-				@Override
-				public void accept(OrderItem t) {
-					List<OrderItem> ois = message.getOrderItems().stream().map(oic -> mapOrderItem(oic))
-							.filter(oi -> t.getId().equals(oi.getParentId())).collect(Collectors.toList());
-					System.out.println("ois: " + ois);
-					if (!ois.isEmpty()) {
-						if (t.getOrderItems() == null) {
-							t.setOrderItems(new CopyOnWriteArrayList<>());
-						}
-						t.getOrderItems().addAll(ois);
-					}
-				}
-			});
+			applyEventToSalesOrder(message, card);
 		} finally {
 			lock.unlock();
 		}
+	}
+
+	private SalesOrder restoreFromEvents(Long id) {
+		SalesOrder so = new SalesOrder();
+		ResponseEntity<List> rsp = restTemplate
+				.getForEntity("http://sales-order-edit-eventstore-service/v1/events/" + id, List.class);
+		rsp.getBody().stream().forEach(o -> applyEventToSalesOrder((SalesOrderEditEvent) o, so));
+		return so;
 	}
 
 	private OrderItem mapOrderItem(OrderItemChange oi) {

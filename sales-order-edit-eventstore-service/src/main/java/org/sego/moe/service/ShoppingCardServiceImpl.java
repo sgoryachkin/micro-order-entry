@@ -14,9 +14,13 @@ public class ShoppingCardServiceImpl implements ShoppingCardService {
 	@Autowired
 	SalesOrderMessageRepository messageRepository;
 	
-    public void addCartEvent(SalesOrderEditEvent cartEvent) {
+    public void addEditSalesOrderEvent(SalesOrderEditEvent cartEvent) {
     	messageRepository.save(cartEvent);
     	cardOutputEventSource.sendMessage(cartEvent);
+    }
+    
+    public Iterable<SalesOrderEditEvent> getSalesOrderEvents(Long salesOrderId) {
+    	return messageRepository.findBySalesOrderId(salesOrderId);
     }
 
 }
