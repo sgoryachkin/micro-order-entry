@@ -8,52 +8,12 @@
 	<packaging>pom</packaging>
 	<version>0.0.1-SNAPSHOT</version>
 
-	<parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>1.5.5.RELEASE</version>
-	</parent>
-
 	<modules>
-		<module>moe-commons</module>
 		<module>discovery-service</module>
-		<module>shoppingcard-service</module>
-		<module>shoppinglogic-service</module>
-		<module>simple-frontend-gateway</module>
+		<module>sales-order-edit-commons</module>
+		<module>sales-order-edit-eventstore-service</module>
+		<module>sales-order-edit-logic-service</module>
+		<module>sales-order-frontend-service</module>
 	</modules>
-
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<java.version>1.8</java.version>
-	</properties>
-
-	<dependencies>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-actuator</artifactId>
-		</dependency>
-	</dependencies>
-
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>org.springframework.cloud</groupId>
-				<artifactId>spring-cloud-dependencies</artifactId>
-				<version>Dalston.SR3</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-			<dependency>
-				<groupId>io.springfox</groupId>
-				<artifactId>springfox-swagger2</artifactId>
-				<version>2.7.0</version>
-			</dependency>
-			<dependency>
-				<groupId>io.springfox</groupId>
-				<artifactId>springfox-swagger-ui</artifactId>
-				<version>2.7.0</version>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
 
 </project>

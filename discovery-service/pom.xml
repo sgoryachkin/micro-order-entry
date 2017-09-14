@@ -6,11 +6,12 @@
     <artifactId>discovery-service</artifactId>
     <packaging>jar</packaging>
 
-    <parent>
-        <groupId>org.sego.moe</groupId>
-        <artifactId>micro-order-entry</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
-    </parent>
+	<parent>
+		<groupId>org.sego.moe</groupId>
+		<artifactId>service-parent</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+		<relativePath>../parent/service-parent/pom.xml</relativePath>
+	</parent>
 
     <dependencies>
         <dependency>

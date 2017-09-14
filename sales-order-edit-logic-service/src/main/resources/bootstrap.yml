@@ -1,0 +1,10 @@
+server:
+  port: 8871
+spring:
+  application:
+    name: sales-order-edit-logic-service
+  cloud:
+    stream:
+      bindings:
+        cardsource:
+          group: sales-order-edit-logic-service-group

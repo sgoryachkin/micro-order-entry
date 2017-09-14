@@ -1,0 +1,10 @@
+server:
+  port: 8873
+spring:
+  application:
+    name: sales-order-frontend-service
+  cloud:
+    stream:
+      bindings:
+        cardsource:
+          group: sales-order-frontend-service-group
