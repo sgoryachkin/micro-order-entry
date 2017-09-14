@@ -31,8 +31,8 @@ public class CardOutputEventSink {
         System.out.println("receiveMessage: " + message);
         applyEvent(message);
         // Rule
-        int size = storage.get(message.getCardId()).getOfferIds().size();
-        if (storage.get(message.getCardId()).getOfferIds().size() > 1) {
+        int size = storage.get(message.getSalesOrderId()).getOfferIds().size();
+        if (storage.get(message.getSalesOrderId()).getOfferIds().size() > 1) {
         	List<OrderItemChange> ois = message.getOrderItems().stream().filter(oi -> oi.getOfferId().equals(33l)).map(new Function<OrderItemChange, OrderItemChange>() {
 				@Override
 				public OrderItemChange apply(OrderItemChange t) {
@@ -48,7 +48,7 @@ public class CardOutputEventSink {
 			}).collect(Collectors.toList());
         	if (!ois.isEmpty()) {
         		SalesOrderEditEvent ce = new SalesOrderEditEvent();
-            	ce.setCardId(message.getCardId());
+            	ce.setSalesOrderId(message.getSalesOrderId());
             	ce.setOrderItems(ois);
     	        ResponseEntity<String> rsp = restTemplate.postForEntity("http://sales-order-edit-eventstore-service/v1/events", ce, String.class);
     	        System.out.println(rsp.getBody());
@@ -58,7 +58,7 @@ public class CardOutputEventSink {
     }
     
     private void applyEvent(SalesOrderEditEvent message) {
-    	Card card = storage.putIfAbsent(message.getCardId(), new Card());
+    	Card card = storage.putIfAbsent(message.getSalesOrderId(), new Card());
     	card.getOfferIds().addAll(message.getOrderItems().parallelStream().map(oi -> oi.getOfferId()).collect(Collectors.toSet()));
     }
 }

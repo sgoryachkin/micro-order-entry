@@ -57,13 +57,13 @@ public class QuotationService {
 		oi.setAttributes(attributes);
 
 		SalesOrderEditEvent event = new SalesOrderEditEvent();
-		event.setCardId(id);
+		event.setSalesOrderId(id);
 		event.setOrderItems(Collections.singletonList(oi));
 		restTemplate.postForEntity("http://sales-order-edit-eventstore-service/v1/events", event, String.class);
 	}
 
 	private void applyEventToSalesOrder(SalesOrderEditEvent message, SalesOrder card) {
-		card.setId(message.getCardId().toString());
+		card.setId(message.getSalesOrderId().toString());
 		if (card.getOrderItems() == null) {
 			card.setOrderItems(new CopyOnWriteArrayList<>());
 		}
@@ -90,7 +90,7 @@ public class QuotationService {
 	}
 
 	private void applyEvent(SalesOrderEditEvent message) {
-		SalesOrder card = storage.putIfAbsent(message.getCardId(), restoreFromEvents(message.getCardId()));
+		SalesOrder card = storage.putIfAbsent(message.getSalesOrderId(), restoreFromEvents(message.getSalesOrderId()));
 		Lock lock = lockRegistry.obtain(card);
 		try {
 			lock.lock();

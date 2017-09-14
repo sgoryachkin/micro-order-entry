@@ -5,7 +5,7 @@ import java.util.Set;
 
 public class SalesOrderEditEvent {
 	
-	private Long cardId;
+	private Long salesOrderId;
 	
 	private List<OrderItemChange> orderItems;
 	
@@ -17,11 +17,11 @@ public class SalesOrderEditEvent {
 	public void setOrderItems(List<OrderItemChange> orderItems) {
 		this.orderItems = orderItems;
 	}
-	public Long getCardId() {
-		return cardId;
+	public Long getSalesOrderId() {
+		return salesOrderId;
 	}
-	public void setCardId(Long cardId) {
-		this.cardId = cardId;
+	public void setSalesOrderId(Long salesOrderId) {
+		this.salesOrderId = salesOrderId;
 	}
 	public Set<Long> getOrderItemsDelete() {
 		return orderItemsDelete;
@@ -33,7 +33,7 @@ public class SalesOrderEditEvent {
 	
 	@Override
 	public String toString() {
-		return "CardEvent [cardId=" + cardId + ", orderItems=" + orderItems + ", orderItemsDelete=" + orderItemsDelete
+		return "CardEvent [cardId=" + salesOrderId + ", orderItems=" + orderItems + ", orderItemsDelete=" + orderItemsDelete
 				+ "]";
 	}
 	
