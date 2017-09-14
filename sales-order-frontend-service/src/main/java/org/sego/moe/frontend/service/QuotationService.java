@@ -11,10 +11,10 @@ import java.util.concurrent.locks.Lock;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import org.sego.moe.commons.model.CardEvent;
-import org.sego.moe.commons.model.OrderItemChange;
 import org.sego.moe.frontend.model.OrderItem;
 import org.sego.moe.frontend.model.SalesOrder;
+import org.sego.moe.sales.order.edit.commons.model.SalesOrderEditEvent;
+import org.sego.moe.sales.order.edit.commons.model.OrderItemChange;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.annotation.StreamListener;
@@ -35,7 +35,7 @@ public class QuotationService {
 	protected RestTemplate restTemplate;
 
 	@StreamListener(CardSink.INPUT)
-	public void receiveMessage(CardEvent message) {
+	public void receiveMessage(SalesOrderEditEvent message) {
 		System.out.println("receiveMessage: " + message);
 		applyEvent(message);
 	}
@@ -55,13 +55,13 @@ public class QuotationService {
 		attributes.put(OrderItemChange.QUANTITY, orderItem.getQuantity() == null ? 1 : orderItem.getQuantity());
 		oi.setAttributes(attributes);
 
-		CardEvent event = new CardEvent();
+		SalesOrderEditEvent event = new SalesOrderEditEvent();
 		event.setCardId(id);
 		event.setOrderItems(Collections.singletonList(oi));
 		restTemplate.postForEntity("http://sales-order-edit-eventstore-service/v1/events", event, String.class);
 	}
 
-	private void applyEvent(CardEvent message) {
+	private void applyEvent(SalesOrderEditEvent message) {
 		SalesOrder card = storage.putIfAbsent(message.getCardId(), new SalesOrder());
 		Lock lock = lockRegistry.obtain(card);
 		try {

@@ -1,9 +1,9 @@
-package org.sego.moe.commons.model;
+package org.sego.moe.sales.order.edit.commons.model;
 
 import java.util.List;
 import java.util.Set;
 
-public class CardEvent {
+public class SalesOrderEditEvent {
 	
 	private Long cardId;
 	

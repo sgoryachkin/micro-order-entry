@@ -1,6 +1,6 @@
 package org.sego.moe.api.v1;
 
-import org.sego.moe.commons.model.CardEvent;
+import org.sego.moe.sales.order.edit.commons.model.SalesOrderEditEvent;
 import org.sego.moe.service.ShoppingCardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,7 +16,7 @@ public class ShoppingCardControllerV1 {
     private ShoppingCardService shoppingCardService;
 
     @RequestMapping(path = "/events", method = RequestMethod.POST)
-    public void addCartEvent(@RequestBody CardEvent cartEvent) {
+    public void addCartEvent(@RequestBody SalesOrderEditEvent cartEvent) {
         shoppingCardService.addCartEvent(cartEvent);
     }
 

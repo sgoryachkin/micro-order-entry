@@ -1,6 +1,6 @@
 package org.sego.moe.service;
 
-import org.sego.moe.commons.model.CardEvent;
+import org.sego.moe.sales.order.edit.commons.model.SalesOrderEditEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.messaging.support.MessageBuilder;
@@ -13,7 +13,7 @@ public class CardOutputEventSource {
     @Autowired
     private CardSource customSource;
 
-    public void sendMessage(CardEvent message) {
+    public void sendMessage(SalesOrderEditEvent message) {
         customSource.output().send(MessageBuilder.withPayload(message).build());
     }
 }

@@ -1,18 +1,16 @@
 package org.sego.moe.service;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.sego.moe.commons.model.CardEvent;
-import org.sego.moe.commons.model.OrderItemChange;
 import org.sego.moe.model.card.Card;
+import org.sego.moe.sales.order.edit.commons.model.SalesOrderEditEvent;
+import org.sego.moe.sales.order.edit.commons.model.OrderItemChange;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.annotation.StreamListener;
@@ -29,7 +27,7 @@ public class CardOutputEventSink {
 
 
     @StreamListener(CardSink.INPUT)
-    public void receiveMessage(CardEvent message) {
+    public void receiveMessage(SalesOrderEditEvent message) {
         System.out.println("receiveMessage: " + message);
         applyEvent(message);
         // Rule
@@ -49,7 +47,7 @@ public class CardOutputEventSink {
 				}
 			}).collect(Collectors.toList());
         	if (!ois.isEmpty()) {
-            	CardEvent ce = new CardEvent();
+        		SalesOrderEditEvent ce = new SalesOrderEditEvent();
             	ce.setCardId(message.getCardId());
             	ce.setOrderItems(ois);
     	        ResponseEntity<String> rsp = restTemplate.postForEntity("http://sales-order-edit-eventstore-service/v1/events", ce, String.class);
@@ -59,7 +57,7 @@ public class CardOutputEventSink {
         System.out.println(storage);
     }
     
-    private void applyEvent(CardEvent message) {
+    private void applyEvent(SalesOrderEditEvent message) {
     	Card card = storage.putIfAbsent(message.getCardId(), new Card());
     	card.getOfferIds().addAll(message.getOrderItems().parallelStream().map(oi -> oi.getOfferId()).collect(Collectors.toSet()));
     }

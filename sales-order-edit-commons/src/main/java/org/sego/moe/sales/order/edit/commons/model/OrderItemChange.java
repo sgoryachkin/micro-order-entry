@@ -1,4 +1,4 @@
-package org.sego.moe.commons.model;
+package org.sego.moe.sales.order.edit.commons.model;
 
 import java.util.Map;
 
