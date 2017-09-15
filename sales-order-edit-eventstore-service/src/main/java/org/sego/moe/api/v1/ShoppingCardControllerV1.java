@@ -4,6 +4,7 @@ import org.sego.moe.sales.order.edit.commons.model.SalesOrderEditEvent;
 import org.sego.moe.service.ShoppingCardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,7 +23,7 @@ public class ShoppingCardControllerV1 {
     }
     
     @GetMapping(path = "/events/{salesOrderId}")
-    public Iterable<SalesOrderEditEvent> getSalesOrderEvents(Long salesOrderId) {
+    public Iterable<SalesOrderEditEvent> getSalesOrderEvents(@PathVariable Long salesOrderId) {
     	return shoppingCardService.getSalesOrderEvents(salesOrderId);
     }
 

@@ -13,11 +13,13 @@ import java.util.stream.Collectors;
 
 import org.sego.moe.frontend.model.OrderItem;
 import org.sego.moe.frontend.model.SalesOrder;
-import org.sego.moe.sales.order.edit.commons.model.SalesOrderEditEvent;
 import org.sego.moe.sales.order.edit.commons.model.OrderItemChange;
+import org.sego.moe.sales.order.edit.commons.model.SalesOrderEditEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.annotation.StreamListener;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.integration.support.locks.DefaultLockRegistry;
 import org.springframework.integration.support.locks.LockRegistry;
@@ -41,8 +43,8 @@ public class QuotationService {
 		applyEvent(message);
 	}
 
-	public SalesOrder getSalesOrder(Long id) {
-		return storage.get(id);
+	public SalesOrder getSalesOrder(Long salesOrderId) {
+		return storage.computeIfAbsent(salesOrderId, id -> restoreFromEvents(id));
 	}
 
 	public void addOrderItem(Long id, String parentOrderItemId, OrderItem orderItem) {
@@ -78,7 +80,6 @@ public class QuotationService {
 			public void accept(OrderItem t) {
 				List<OrderItem> ois = message.getOrderItems().stream().map(oic -> mapOrderItem(oic))
 						.filter(oi -> t.getId().equals(oi.getParentId())).collect(Collectors.toList());
-				System.out.println("ois: " + ois);
 				if (!ois.isEmpty()) {
 					if (t.getOrderItems() == null) {
 						t.setOrderItems(new CopyOnWriteArrayList<>());
@@ -90,7 +91,7 @@ public class QuotationService {
 	}
 
 	private void applyEvent(SalesOrderEditEvent message) {
-		SalesOrder card = storage.putIfAbsent(message.getSalesOrderId(), restoreFromEvents(message.getSalesOrderId()));
+		SalesOrder card = storage.computeIfAbsent(message.getSalesOrderId(), id -> restoreFromEvents(id));
 		Lock lock = lockRegistry.obtain(card);
 		try {
 			lock.lock();
@@ -102,9 +103,11 @@ public class QuotationService {
 
 	private SalesOrder restoreFromEvents(Long id) {
 		SalesOrder so = new SalesOrder();
-		ResponseEntity<List> rsp = restTemplate
-				.getForEntity("http://sales-order-edit-eventstore-service/v1/events/" + id, List.class);
-		rsp.getBody().stream().forEach(o -> applyEventToSalesOrder((SalesOrderEditEvent) o, so));
+		ResponseEntity<List<SalesOrderEditEvent>> rsp = restTemplate.exchange("http://sales-order-edit-eventstore-service/v1/events/" + id,
+                HttpMethod.GET, null, new ParameterizedTypeReference<List<SalesOrderEditEvent>>() {
+        });
+		System.out.println(rsp.getBody());
+		rsp.getBody().forEach(o -> applyEventToSalesOrder((SalesOrderEditEvent) o, so));
 		return so;
 	}
 
