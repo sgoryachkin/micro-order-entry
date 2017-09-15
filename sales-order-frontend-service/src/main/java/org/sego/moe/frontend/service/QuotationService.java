@@ -94,8 +94,12 @@ public class QuotationService {
 		Lock lock = lockRegistry.obtain(message.getSalesOrderId());
 		try {
 			lock.lock();
-			SalesOrder card = storage.computeIfAbsent(message.getSalesOrderId(), id -> restoreFromEvents(id));
-			applyEventToSalesOrder(message, card);
+			SalesOrder card = storage.get(message.getSalesOrderId());
+			if (card == null) {
+				storage.computeIfAbsent(message.getSalesOrderId(), id -> restoreFromEvents(id));
+			} else {
+				applyEventToSalesOrder(message, card);
+			}
 		} finally {
 			lock.unlock();
 		}
