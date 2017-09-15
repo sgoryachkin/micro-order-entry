@@ -33,12 +33,12 @@ public class CardOutputEventSink {
         // Rule
         int size = storage.get(message.getSalesOrderId()).getOfferIds().size();
         if (storage.get(message.getSalesOrderId()).getOfferIds().size() > 1) {
-        	List<OrderItemChange> ois = message.getOrderItems().stream().filter(oi -> oi.getOfferId().equals(33l)).map(new Function<OrderItemChange, OrderItemChange>() {
+        	List<OrderItemChange> ois = message.getOrderItems().stream().filter(oi -> oi.getOfferId().equals(3l)).map(new Function<OrderItemChange, OrderItemChange>() {
 				@Override
 				public OrderItemChange apply(OrderItemChange t) {
 	            	OrderItemChange oi = new OrderItemChange();
 	            	oi.setId(UUID.randomUUID().toString());
-	            	oi.setOfferId(55l);
+	            	oi.setOfferId(5l);
 	            	Map<Long, Object> attributes = new HashMap<>();
 	            	attributes.put(OrderItemChange.PARENT_OI, t.getId());
 	            	attributes.put(OrderItemChange.QUANTITY, size);

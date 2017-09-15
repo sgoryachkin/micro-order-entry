@@ -10,6 +10,7 @@
 
 	<modules>
 		<module>discovery-service</module>
+		<module>sales-catalog-service</module>
 		<module>sales-order-edit-commons</module>
 		<module>sales-order-edit-eventstore-service</module>
 		<module>sales-order-edit-logic-service</module>

@@ -115,7 +115,10 @@ public class QuotationService {
 		OrderItem orderItem = new OrderItem();
 		orderItem.setId(oi.getId());
 		orderItem.setOfferId(oi.getOfferId().toString());
-		orderItem.setName("Offer_" + oi.getOfferId());
+		@SuppressWarnings("rawtypes")
+		ResponseEntity<Map> offer = restTemplate.getForEntity("http://sales-catalog-service/v1/offer/" + oi.getOfferId(), Map.class);
+		orderItem.setName((String) offer.getBody().get("name"));
+		orderItem.setDescription((String) offer.getBody().get("description"));
 		orderItem.setQuantity((Integer) oi.getAttributes().get(OrderItemChange.QUANTITY));
 		orderItem.setParentId((String) oi.getAttributes().get(OrderItemChange.PARENT_OI));
 		return orderItem;

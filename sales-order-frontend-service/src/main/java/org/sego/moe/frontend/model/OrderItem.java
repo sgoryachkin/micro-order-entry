@@ -9,6 +9,7 @@ public class OrderItem {
 	private String offerId;
 	private String name;
 	private Integer quantity;
+	private String description;
 	private List<OrderItem> orderItems;
 	
 	public OrderItem() {
@@ -54,6 +55,14 @@ public class OrderItem {
 
 	public void setParentId(String parentId) {
 		this.parentId = parentId;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 	
 }
