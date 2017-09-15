@@ -91,10 +91,10 @@ public class QuotationService {
 	}
 
 	private void applyEvent(SalesOrderEditEvent message) {
-		SalesOrder card = storage.computeIfAbsent(message.getSalesOrderId(), id -> restoreFromEvents(id));
-		Lock lock = lockRegistry.obtain(card);
+		Lock lock = lockRegistry.obtain(message.getSalesOrderId());
 		try {
 			lock.lock();
+			SalesOrder card = storage.computeIfAbsent(message.getSalesOrderId(), id -> restoreFromEvents(id));
 			applyEventToSalesOrder(message, card);
 		} finally {
 			lock.unlock();
