@@ -26,7 +26,7 @@ public class SalesCatalogControllerV1 {
     
     @GetMapping(path = "/offer/{offerId}")
     @Cacheable("offer")
-    public Map<String, String> getSalesOrderEvents(@PathVariable Long offerId) {
+    public Map<String, String> getOffer(@PathVariable Long offerId) {
     	Map<String, String> offer = new HashMap<>();
 
         HttpHeaders headers = new HttpHeaders();

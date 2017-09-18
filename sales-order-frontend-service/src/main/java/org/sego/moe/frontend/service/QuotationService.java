@@ -11,6 +11,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import org.sego.moe.frontend.model.Offer;
 import org.sego.moe.frontend.model.OrderItem;
 import org.sego.moe.frontend.model.SalesOrder;
 import org.sego.moe.sales.order.edit.commons.model.OrderItemChange;
@@ -35,7 +36,10 @@ public class QuotationService {
 	LockRegistry lockRegistry = new DefaultLockRegistry();
 
 	@Autowired
-	protected RestTemplate restTemplate;
+	private RestTemplate restTemplate;
+	
+	@Autowired
+	private CatalogService catalogService;
 
 	@StreamListener(CardSink.INPUT)
 	public void receiveMessage(SalesOrderEditEvent message) {
@@ -119,10 +123,10 @@ public class QuotationService {
 		OrderItem orderItem = new OrderItem();
 		orderItem.setId(oi.getId());
 		orderItem.setOfferId(oi.getOfferId().toString());
-		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> offer = restTemplate.getForEntity("http://sales-catalog-service/v1/offer/" + oi.getOfferId(), Map.class);
-		orderItem.setName((String) offer.getBody().get("name"));
-		orderItem.setDescription((String) offer.getBody().get("description"));
+		
+		Offer offer = catalogService.getOffer(oi.getOfferId());
+		orderItem.setName(offer.getName());
+		orderItem.setDescription(offer.getDescription());
 		orderItem.setQuantity((Integer) oi.getAttributes().get(OrderItemChange.QUANTITY));
 		orderItem.setParentId((String) oi.getAttributes().get(OrderItemChange.PARENT_OI));
 		return orderItem;
