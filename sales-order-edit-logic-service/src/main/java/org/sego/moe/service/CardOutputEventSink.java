@@ -50,6 +50,7 @@ public class CardOutputEventSink {
         		SalesOrderEditEvent ce = new SalesOrderEditEvent();
             	ce.setSalesOrderId(message.getSalesOrderId());
             	ce.setOrderItems(ois);
+            	ce.setSourceEventId(message.getId());
     	        ResponseEntity<String> rsp = restTemplate.postForEntity("http://sales-order-edit-eventstore-service/v1/events", ce, String.class);
     	        System.out.println(rsp.getBody());
         	}

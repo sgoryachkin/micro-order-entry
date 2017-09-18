@@ -15,8 +15,8 @@ public class ShoppingCardServiceImpl implements ShoppingCardService {
 	SalesOrderMessageRepository messageRepository;
 	
     public void addEditSalesOrderEvent(SalesOrderEditEvent cartEvent) {
-    	messageRepository.save(cartEvent);
-    	cardOutputEventSource.sendMessage(cartEvent);
+    	SalesOrderEditEvent event = messageRepository.save(cartEvent);
+    	cardOutputEventSource.sendMessage(event);
     }
     
     public Iterable<SalesOrderEditEvent> getSalesOrderEvents(Long salesOrderId) {
