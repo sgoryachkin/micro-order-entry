@@ -7,3 +7,7 @@ mongo:
   image: mongo:3.4
   ports:
   - 27017:27017
+consul:
+  image: consul
+  ports:
+  - 8500:8500
