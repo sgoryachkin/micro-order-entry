@@ -9,7 +9,6 @@
 	<version>0.0.1-SNAPSHOT</version>
 
 	<modules>
-		<module>discovery-service</module>
 		<module>sales-catalog-service</module>
 		<module>sales-order-edit-commons</module>
 		<module>sales-order-edit-eventstore-service</module>
