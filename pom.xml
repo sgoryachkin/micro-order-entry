@@ -9,6 +9,8 @@
 	<version>0.0.1-SNAPSHOT</version>
 
 	<modules>
+		<module>parent/library-parent</module>
+		<module>parent/service-parent</module>
 		<module>sales-catalog-service</module>
 		<module>sales-order-edit-commons</module>
 		<module>sales-order-edit-eventstore-service</module>
