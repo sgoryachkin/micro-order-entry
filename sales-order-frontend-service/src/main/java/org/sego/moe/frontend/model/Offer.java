@@ -5,6 +5,7 @@ public class Offer {
 	private Long id;
 	private String name;
 	private String description;
+	private int mass;
 	
 	public Long getId() {
 		return id;
@@ -23,6 +24,12 @@ public class Offer {
 	}
 	public void setDescription(String description) {
 		this.description = description;
+	}
+	public int getMass() {
+		return mass;
+	}
+	public void setMass(int mass) {
+		this.mass = mass;
 	}
 	
 	

@@ -10,6 +10,7 @@ public class OrderItem {
 	private String name;
 	private Integer quantity;
 	private String description;
+	private String reason;
 	private List<OrderItem> orderItems;
 	
 	public OrderItem() {
@@ -63,6 +64,14 @@ public class OrderItem {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public String getReason() {
+		return reason;
+	}
+
+	public void setReason(String reason) {
+		this.reason = reason;
 	}
 	
 }

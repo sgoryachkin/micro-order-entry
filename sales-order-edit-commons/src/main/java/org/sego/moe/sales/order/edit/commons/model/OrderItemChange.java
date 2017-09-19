@@ -4,11 +4,13 @@ import java.util.Map;
 
 public class OrderItemChange {
 	
-	public static final Long PARENT_OI = 0l;
-	public static final Long QUANTITY = 1l;
+	public static final String TOP_PARENT_ID = "top";
 	
 	private String id;
 	private Long offerId;
+	private int quantity;
+	private String parentId;
+	
 	private Map<Long, Object> attributes;
 	
 	public String getId() {
@@ -29,10 +31,17 @@ public class OrderItemChange {
 	public void setAttributes(Map<Long, Object> attributes) {
 		this.attributes = attributes;
 	}
-	
-	@Override
-	public String toString() {
-		return "OrderItem [id=" + id + ", offerId=" + offerId + ", attributes=" + attributes + "]";
+	public int getQuantity() {
+		return quantity;
+	}
+	public void setQuantity(int quantity) {
+		this.quantity = quantity;
+	}
+	public String getParentId() {
+		return parentId;
+	}
+	public void setParentId(String parentId) {
+		this.parentId = parentId;
 	}
 
 }

@@ -37,7 +37,7 @@ public class QuotationService {
 
 	@Autowired
 	private RestTemplate restTemplate;
-	
+
 	@Autowired
 	private CatalogService catalogService;
 
@@ -56,10 +56,8 @@ public class QuotationService {
 		oi.setOfferId(Long.valueOf(orderItem.getOfferId()));
 		oi.setId(UUID.randomUUID().toString());
 		Map<Long, Object> attributes = new HashMap<>();
-		if (parentOrderItemId != null) {
-			attributes.put(OrderItemChange.PARENT_OI, parentOrderItemId);
-		}
-		attributes.put(OrderItemChange.QUANTITY, orderItem.getQuantity() == null ? 1 : orderItem.getQuantity());
+		oi.setParentId(parentOrderItemId == null ? OrderItemChange.TOP_PARENT_ID : parentOrderItemId);
+		oi.setQuantity(orderItem.getQuantity() == null ? 1 : orderItem.getQuantity());
 		oi.setAttributes(attributes);
 
 		SalesOrderEditEvent event = new SalesOrderEditEvent();
@@ -111,24 +109,29 @@ public class QuotationService {
 
 	private SalesOrder restoreFromEvents(Long id) {
 		SalesOrder so = new SalesOrder();
-		ResponseEntity<List<SalesOrderEditEvent>> rsp = restTemplate.exchange("http://sales-order-edit-eventstore-service/v1/events/" + id,
-                HttpMethod.GET, null, new ParameterizedTypeReference<List<SalesOrderEditEvent>>() {
-        });
-		System.out.println(rsp.getBody());
-		rsp.getBody().forEach(o -> applyEventToSalesOrder((SalesOrderEditEvent) o, so));
-		return so;
+		ResponseEntity<List<SalesOrderEditEvent>> rsp = restTemplate.exchange(
+				"http://sales-order-edit-eventstore-service/v1/events/" + id, HttpMethod.GET, null,
+				new ParameterizedTypeReference<List<SalesOrderEditEvent>>() {
+				});
+		if (!rsp.getBody().isEmpty()) {
+			rsp.getBody().forEach(o -> applyEventToSalesOrder((SalesOrderEditEvent) o, so));
+			return so;
+		} else {
+			return null;
+		}
 	}
 
 	private OrderItem mapOrderItem(OrderItemChange oi) {
 		OrderItem orderItem = new OrderItem();
 		orderItem.setId(oi.getId());
 		orderItem.setOfferId(oi.getOfferId().toString());
-		
+
 		Offer offer = catalogService.getOffer(oi.getOfferId());
 		orderItem.setName(offer.getName());
 		orderItem.setDescription(offer.getDescription());
-		orderItem.setQuantity((Integer) oi.getAttributes().get(OrderItemChange.QUANTITY));
-		orderItem.setParentId((String) oi.getAttributes().get(OrderItemChange.PARENT_OI));
+		orderItem.setQuantity(oi.getQuantity());
+		orderItem.setReason(oi.getAttributes() != null ? (String)oi.getAttributes().get(10l) : null);
+		orderItem.setParentId(OrderItemChange.TOP_PARENT_ID.equals(oi.getParentId()) ? null : oi.getParentId());
 		return orderItem;
 	}
 }

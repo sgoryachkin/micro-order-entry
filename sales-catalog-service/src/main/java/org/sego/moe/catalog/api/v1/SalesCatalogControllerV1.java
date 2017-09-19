@@ -39,6 +39,7 @@ public class SalesCatalogControllerV1 {
 		ResponseEntity<Map> rsp = restTemplate.exchange("http://swapi.co/api/people/" + offerId + "/?format=json", HttpMethod.GET, payload, Map.class);
     	offer.put("name", (String) rsp.getBody().get("name"));
     	offer.put("description", (String) rsp.getBody().get("url"));
+    	offer.put("mass", (String) rsp.getBody().get("mass"));
     	return offer;
     }
 

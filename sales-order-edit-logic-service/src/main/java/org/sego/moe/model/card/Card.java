@@ -1,22 +1,15 @@
 package org.sego.moe.model.card;
 
-import java.util.Collections;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-
 public class Card {
 	
-	private Set<Long> offerIds = Collections.newSetFromMap(new ConcurrentHashMap<Long, Boolean>());
+	private Integer count = 0;
 
-	public Set<Long> getOfferIds() {
-		return offerIds;
+	public Integer getCount() {
+		return count;
 	}
 
-	@Override
-	public String toString() {
-		return "Card [offerIds=" + offerIds + "]";
+	public void setCount(Integer count) {
+		this.count = count;
 	}
-	
-	
 
 }
