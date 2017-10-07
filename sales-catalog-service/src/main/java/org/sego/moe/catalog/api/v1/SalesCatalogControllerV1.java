@@ -30,13 +30,15 @@ public class SalesCatalogControllerV1 {
     	Map<String, String> offer = new HashMap<>();
 
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add("User-Agent", "firefox");
+        headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
+        headers.add("User-Agent", "Chrome");
 
         HttpEntity<?> payload = new HttpEntity<>(headers);
     	
+        String url = "https://swapi.co/api/people/" + offerId + "?format=json";
+        
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> rsp = restTemplate.exchange("http://swapi.co/api/people/" + offerId + "/?format=json", HttpMethod.GET, payload, Map.class);
+		ResponseEntity<Map> rsp = restTemplate.exchange(url, HttpMethod.GET, payload, Map.class);
     	offer.put("name", (String) rsp.getBody().get("name"));
     	offer.put("description", (String) rsp.getBody().get("url"));
     	offer.put("mass", (String) rsp.getBody().get("mass"));
