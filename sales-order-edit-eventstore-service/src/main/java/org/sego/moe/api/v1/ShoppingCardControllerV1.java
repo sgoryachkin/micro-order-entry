@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import reactor.core.publisher.Flux;
+
 @RestController
 @RequestMapping(path = "/v1")
 public class ShoppingCardControllerV1 {
@@ -19,11 +21,13 @@ public class ShoppingCardControllerV1 {
 
     @PostMapping(path = "/events")
     public void addCartEvent(@RequestBody SalesOrderEditEvent cartEvent) {
+    	System.out.println("addCartEvent " + cartEvent.toString());
         shoppingCardService.addEditSalesOrderEvent(cartEvent);
     }
     
     @GetMapping(path = "/events/{salesOrderId}")
-    public Iterable<SalesOrderEditEvent> getSalesOrderEvents(@PathVariable Long salesOrderId) {
+    public Flux<SalesOrderEditEvent> getSalesOrderEvents(@PathVariable Long salesOrderId) {
+    	System.out.println("getSalesOrderEvents " + salesOrderId);
     	return shoppingCardService.getSalesOrderEvents(salesOrderId);
     }
 

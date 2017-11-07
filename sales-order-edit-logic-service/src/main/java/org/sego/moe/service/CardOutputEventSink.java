@@ -13,16 +13,14 @@ import org.sego.moe.model.card.Card;
 import org.sego.moe.sales.order.edit.commons.model.OrderItemChange;
 import org.sego.moe.sales.order.edit.commons.model.SalesOrderEditEvent;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.stream.annotation.EnableBinding;
-import org.springframework.cloud.stream.annotation.StreamListener;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.integration.support.locks.DefaultLockRegistry;
 import org.springframework.integration.support.locks.LockRegistry;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 
-@EnableBinding(CardSink.class)
+import reactor.core.publisher.Flux;
+
+@Service
 public class CardOutputEventSink {
 
 	LockRegistry lockRegistry = new DefaultLockRegistry();
@@ -30,12 +28,11 @@ public class CardOutputEventSink {
 	Map<Long, Card> storage = new ConcurrentHashMap<>();
 
 	@Autowired
-	private RestTemplate restTemplate;
+	private WebClient webClient;
 
 	@Autowired
 	private CatalogService catalogService;
 
-	@StreamListener(CardSink.INPUT)
 	public void receiveMessage(SalesOrderEditEvent message) {
 		System.out.println("receiveMessage: " + message);
 		applyEvent(message);
@@ -64,8 +61,7 @@ public class CardOutputEventSink {
 				ce.setSalesOrderId(message.getSalesOrderId());
 				ce.setOrderItems(ois);
 				ce.setSourceEventId(message.getId());
-				ResponseEntity<String> rsp = restTemplate
-						.postForEntity("http://sales-order-edit-eventstore-service/v1/events", ce, String.class);
+				webClient.post().uri("http://localhost:8861/v1/events").syncBody(ce).exchange().doOnSuccess(r -> System.out.println(ce.toString()));
 			}
 		}
 	}
@@ -96,12 +92,9 @@ public class CardOutputEventSink {
 
 	private Card restoreFromEvents(Long id) {
 		Card so = new Card();
-		ResponseEntity<List<SalesOrderEditEvent>> rsp = restTemplate.exchange(
-				"http://sales-order-edit-eventstore-service/v1/events/" + id, HttpMethod.GET, null,
-				new ParameterizedTypeReference<List<SalesOrderEditEvent>>() {
-				});
-		if (!rsp.getBody().isEmpty()) {
-			rsp.getBody().forEach(o -> applyEventToSalesOrder((SalesOrderEditEvent) o, so));
+		Flux<SalesOrderEditEvent> events = webClient.get().uri("http://localhost:8861/v1/events/" + id).retrieve().bodyToFlux(SalesOrderEditEvent.class);
+		events.doOnEach(o -> applyEventToSalesOrder(o.get(), so));
+		if (events.count().block() != 0) {
 			return so;
 		} else {
 			return null;

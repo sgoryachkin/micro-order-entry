@@ -2,10 +2,13 @@ package org.sego.moe.dao;
 
 import org.sego.moe.sales.order.edit.commons.model.SalesOrderEditEvent;
 
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
 public interface SalesOrderMessageRepository {
 	
-	SalesOrderEditEvent save(SalesOrderEditEvent event);
+	Mono<SalesOrderEditEvent> insert(SalesOrderEditEvent event);
 	
-	Iterable<SalesOrderEditEvent> findBySalesOrderId(Long cardId);
+	Flux<SalesOrderEditEvent> findBySalesOrderId(Long cardId);
 
 }

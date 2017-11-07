@@ -1,0 +1,5 @@
+server:
+  port: 8871
+spring:
+  application:
+    name: sales-order-edit-logic-service

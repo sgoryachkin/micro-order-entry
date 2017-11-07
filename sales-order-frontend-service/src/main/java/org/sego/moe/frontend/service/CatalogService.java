@@ -18,7 +18,7 @@ public class CatalogService {
     @Cacheable("offer")
 	public Offer getOffer(Long offerId) {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> offerMap = restTemplate.getForEntity("http://sales-catalog-service/v1/offer/" + offerId, Map.class);
+		ResponseEntity<Map> offerMap = restTemplate.getForEntity("http://localhost:8881/v1/offer/" + offerId, Map.class);
 		Offer offer = new Offer();
 		offer.setMass(Integer.valueOf((String) offerMap.getBody().get("mass")).intValue());
 		offer.setName((String) offerMap.getBody().get("name"));

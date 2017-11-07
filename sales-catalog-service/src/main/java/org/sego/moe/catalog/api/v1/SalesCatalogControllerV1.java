@@ -5,44 +5,37 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
 
+import reactor.core.publisher.Mono;
 
 @RestController
-@RequestMapping(path = "/v1")
+@RequestMapping(path = { "/v1" })
 public class SalesCatalogControllerV1 {
-	
-    @Autowired                            
-    protected RestTemplate restTemplate; 
-    
-    @GetMapping(path = "/offer/{offerId}")
-    @Cacheable("offer")
-    public Map<String, String> getOffer(@PathVariable Long offerId) {
-    	Map<String, String> offer = new HashMap<>();
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
-        headers.add("User-Agent", "Chrome");
+	@Autowired
+	protected WebClient webClient;
 
-        HttpEntity<?> payload = new HttpEntity<>(headers);
-    	
-        String url = "https://swapi.co/api/people/" + offerId + "?format=json";
-        
-		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> rsp = restTemplate.exchange(url, HttpMethod.GET, payload, Map.class);
-    	offer.put("name", (String) rsp.getBody().get("name"));
-    	offer.put("description", (String) rsp.getBody().get("url"));
-    	offer.put("mass", (String) rsp.getBody().get("mass"));
-    	return offer;
-    }
+	@GetMapping(path = "/offer/{offerId}")
+	@Cacheable("offer")
+	public Mono<Map<String, String>> getOffer(@PathVariable Long offerId) {
+		String url = "https://swapi.co/api/people/" + offerId + "?format=json";
+		Mono<Map<String, String>> rsp = webClient.get().uri(url).accept(MediaType.APPLICATION_JSON_UTF8)
+				.header("User-Agent", "Chrome").retrieve().bodyToMono(Map.class).map(map -> mapResponse(map));
+		return rsp;
+	}
+
+	private Map<String, String> mapResponse(Map<?, ?> rsp) {
+		Map<String, String> offer = new HashMap<>();
+		offer.put("name", (String) rsp.get("name"));
+		offer.put("description", (String) rsp.get("url"));
+		offer.put("mass", (String) rsp.get("mass"));
+		return offer;
+	}
 
 }

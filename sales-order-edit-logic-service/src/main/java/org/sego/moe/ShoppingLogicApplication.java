@@ -3,15 +3,13 @@ package org.sego.moe;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
-import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
 
-@EnableDiscoveryClient
+//@EnableDiscoveryClient
 @SpringBootApplication
-@Configuration
 @EnableCaching
 public class ShoppingLogicApplication {
 	
@@ -19,10 +17,14 @@ public class ShoppingLogicApplication {
 		SpringApplication.run(ShoppingLogicApplication.class, args);
 	}
 	
-	@LoadBalanced
     @Bean
     RestTemplate restTemplate() {
         return new RestTemplate();
     }
+	
+	@Bean
+	WebClient webClient() {
+		return WebClient.create();
+	}
 	
 }

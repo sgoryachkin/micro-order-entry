@@ -17,41 +17,39 @@ import org.sego.moe.frontend.model.SalesOrder;
 import org.sego.moe.sales.order.edit.commons.model.OrderItemChange;
 import org.sego.moe.sales.order.edit.commons.model.SalesOrderEditEvent;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.stream.annotation.EnableBinding;
-import org.springframework.cloud.stream.annotation.StreamListener;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
 import org.springframework.integration.support.locks.DefaultLockRegistry;
 import org.springframework.integration.support.locks.LockRegistry;
-import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 
-@EnableBinding(CardSink.class)
-@Component
+import reactor.core.publisher.ConnectableFlux;
+
+@Service
 public class QuotationService {
 
 	Map<Long, SalesOrder> storage = new ConcurrentHashMap<>();
 
 	LockRegistry lockRegistry = new DefaultLockRegistry();
-
+	
 	@Autowired
-	private RestTemplate restTemplate;
+	private WebClient webClient;
 
 	@Autowired
 	private CatalogService catalogService;
 
-	@StreamListener(CardSink.INPUT)
 	public void receiveMessage(SalesOrderEditEvent message) {
 		System.out.println("receiveMessage: " + message);
 		applyEvent(message);
 	}
 
 	public SalesOrder getSalesOrder(Long salesOrderId) {
+		System.out.println("getSalesOrder: " + salesOrderId);
 		return storage.computeIfAbsent(salesOrderId, id -> restoreFromEvents(id));
 	}
 
 	public void addOrderItem(Long id, String parentOrderItemId, OrderItem orderItem) {
+		System.out.println("addOrderItem");
 		OrderItemChange oi = new OrderItemChange();
 		oi.setOfferId(Long.valueOf(orderItem.getOfferId()));
 		oi.setId(UUID.randomUUID().toString());
@@ -63,15 +61,17 @@ public class QuotationService {
 		SalesOrderEditEvent event = new SalesOrderEditEvent();
 		event.setSalesOrderId(id);
 		event.setOrderItems(Collections.singletonList(oi));
-		restTemplate.postForEntity("http://sales-order-edit-eventstore-service/v1/events", event, String.class);
+		System.out.println("Send: " + event);
+		webClient.post().uri("http://localhost:8861/v1/events").syncBody(event).exchange().log().doFinally(cr -> System.out.println(cr)).subscribe(cr -> System.out.println("Successfuly send"));
 	}
 
 	private void applyEventToSalesOrder(SalesOrderEditEvent message, SalesOrder card) {
+		System.out.println("applyEventToSalesOrder: " + message);
 		card.setId(message.getSalesOrderId().toString());
 		if (card.getOrderItems() == null) {
 			card.setOrderItems(new CopyOnWriteArrayList<>());
 		}
-
+		card.setEventCount(card.getEventCount() + 1);
 		List<OrderItem> ois = message.getOrderItems().stream().map(oic -> mapOrderItem(oic))
 				.filter(oi -> oi.getParentId() == null).collect(Collectors.toList());
 		card.getOrderItems().addAll(ois);
@@ -97,8 +97,8 @@ public class QuotationService {
 		try {
 			lock.lock();
 			SalesOrder card = storage.get(message.getSalesOrderId());
-			if (card == null) {
-				storage.computeIfAbsent(message.getSalesOrderId(), id -> restoreFromEvents(id));
+			if (card == null || card.getEventCount() == 0) {
+				storage.put(message.getSalesOrderId(), restoreFromEvents(message.getSalesOrderId()));
 			} else {
 				applyEventToSalesOrder(message, card);
 			}
@@ -109,16 +109,16 @@ public class QuotationService {
 
 	private SalesOrder restoreFromEvents(Long id) {
 		SalesOrder so = new SalesOrder();
-		ResponseEntity<List<SalesOrderEditEvent>> rsp = restTemplate.exchange(
-				"http://sales-order-edit-eventstore-service/v1/events/" + id, HttpMethod.GET, null,
-				new ParameterizedTypeReference<List<SalesOrderEditEvent>>() {
-				});
-		if (!rsp.getBody().isEmpty()) {
-			rsp.getBody().forEach(o -> applyEventToSalesOrder((SalesOrderEditEvent) o, so));
-			return so;
-		} else {
-			return null;
-		}
+		ConnectableFlux<SalesOrderEditEvent> events = webClient.get().uri("http://localhost:8861/v1/events/" + id).retrieve().bodyToFlux(SalesOrderEditEvent.class).publish();
+		System.out.println("restoreFromEvents before block " + id);
+		events.subscribe(o -> applyEventToSalesOrder(o, so));
+		events.connect();
+		events.blockLast();
+		
+		
+		//System.out.println("restoreFromEvents count: " + count);
+		return so;
+		
 	}
 
 	private OrderItem mapOrderItem(OrderItemChange oi) {
