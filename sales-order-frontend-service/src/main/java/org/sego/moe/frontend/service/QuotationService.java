@@ -17,7 +17,6 @@ import org.sego.moe.frontend.model.SalesOrder;
 import org.sego.moe.sales.order.edit.commons.model.OrderItemChange;
 import org.sego.moe.sales.order.edit.commons.model.SalesOrderEditEvent;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.integration.support.locks.DefaultLockRegistry;
 import org.springframework.integration.support.locks.LockRegistry;
 import org.springframework.stereotype.Service;
@@ -44,8 +43,17 @@ public class QuotationService {
 	}
 
 	public SalesOrder getSalesOrder(Long salesOrderId) {
-		System.out.println("getSalesOrder: " + salesOrderId);
-		return storage.computeIfAbsent(salesOrderId, id -> restoreFromEvents(id));
+		Lock lock = lockRegistry.obtain(salesOrderId);
+		try {
+			lock.lock();
+			SalesOrder card = storage.get(salesOrderId);
+			if (card == null || card.getEventCount() == 0) {
+				storage.put(salesOrderId, restoreFromEvents(salesOrderId));
+			}
+			return storage.get(salesOrderId);
+		} finally {
+			lock.unlock();
+		}
 	}
 
 	public void addOrderItem(Long id, String parentOrderItemId, OrderItem orderItem) {
@@ -109,11 +117,16 @@ public class QuotationService {
 
 	private SalesOrder restoreFromEvents(Long id) {
 		SalesOrder so = new SalesOrder();
-		ConnectableFlux<SalesOrderEditEvent> events = webClient.get().uri("http://localhost:8861/v1/events/" + id).retrieve().bodyToFlux(SalesOrderEditEvent.class).publish();
+		ConnectableFlux<SalesOrderEditEvent> events = webClient.get().uri("http://localhost:8861/v1/events/" + id).retrieve().bodyToFlux(SalesOrderEditEvent.class).log().doFinally(st -> System.out.println(st)).publish();
 		System.out.println("restoreFromEvents before block " + id);
+		events.log();
+		//events.autoConnect(1);
 		events.subscribe(o -> applyEventToSalesOrder(o, so));
 		events.connect();
-		events.blockLast();
+		//events.
+		System.out.println("Last: " + events.blockLast());
+		
+		//events.blockLast();
 		
 		
 		//System.out.println("restoreFromEvents count: " + count);
