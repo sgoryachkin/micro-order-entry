@@ -3,3 +3,6 @@ server:
 spring:
   application:
     name: sales-order-frontend-service
+frontend:
+  catalog: http://localhost:8881
+  eventstore: http://localhost:8861

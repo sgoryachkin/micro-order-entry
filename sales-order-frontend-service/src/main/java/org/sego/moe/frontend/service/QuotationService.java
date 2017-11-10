@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import reactor.core.publisher.ConnectableFlux;
+import reactor.core.publisher.Mono;
 
 @Service
 public class QuotationService {
@@ -138,13 +139,16 @@ public class QuotationService {
 		OrderItem orderItem = new OrderItem();
 		orderItem.setId(oi.getId());
 		orderItem.setOfferId(oi.getOfferId().toString());
-
-		Offer offer = catalogService.getOffer(oi.getOfferId());
-		orderItem.setName(offer.getName());
-		orderItem.setDescription(offer.getDescription());
 		orderItem.setQuantity(oi.getQuantity());
 		orderItem.setReason(oi.getAttributes() != null ? (String)oi.getAttributes().get(10l) : null);
 		orderItem.setParentId(OrderItemChange.TOP_PARENT_ID.equals(oi.getParentId()) ? null : oi.getParentId());
+		catalogService.getOffer(oi.getOfferId()).subscribe(new Consumer<Offer>() {
+			@Override
+			public void accept(Offer offer) {
+				orderItem.setName(offer.getName());
+				orderItem.setDescription(offer.getDescription());
+			}
+		});
 		return orderItem;
 	}
 }

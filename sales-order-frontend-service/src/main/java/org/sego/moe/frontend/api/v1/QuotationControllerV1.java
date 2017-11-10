@@ -1,10 +1,15 @@
 package org.sego.moe.frontend.api.v1;
 
+import java.util.Map;
+
+import org.sego.moe.frontend.model.Offer;
 import org.sego.moe.frontend.model.OrderItem;
 import org.sego.moe.frontend.model.SalesOrder;
+import org.sego.moe.frontend.service.CatalogService;
 import org.sego.moe.frontend.service.QuotationService;
 import org.sego.moe.sales.order.edit.commons.model.SalesOrderEditEvent;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,12 +17,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import reactor.core.publisher.Mono;
+
 @RestController
 @RequestMapping(path = "/v1")
 public class QuotationControllerV1 {
 	
 	@Autowired
 	QuotationService quotationService;
+	
+	@Autowired
+	CatalogService catalogService;
 
     @GetMapping(path = "/quote/{quoteId}")
     public SalesOrder getQuote(@PathVariable String quoteId) {
