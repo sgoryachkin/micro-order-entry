@@ -1,18 +1,15 @@
 package org.sego.moe.frontend.model;
 
+import java.util.UUID;
+
 public class Offer {
 	
-	private Long id;
+	private UUID id;
 	private String name;
 	private String description;
 	private int mass;
 	
-	public Long getId() {
-		return id;
-	}
-	public void setId(Long id) {
-		this.id = id;
-	}
+
 	public String getName() {
 		return name;
 	}
@@ -30,6 +27,12 @@ public class Offer {
 	}
 	public void setMass(int mass) {
 		this.mass = mass;
+	}
+	public UUID getId() {
+		return id;
+	}
+	public void setId(UUID id) {
+		this.id = id;
 	}
 	
 	

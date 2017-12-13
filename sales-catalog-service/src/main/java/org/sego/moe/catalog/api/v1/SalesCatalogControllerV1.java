@@ -2,6 +2,7 @@ package org.sego.moe.catalog.api.v1;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -22,7 +23,8 @@ public class SalesCatalogControllerV1 {
 
 	@GetMapping(path = "/offer/{offerId}")
 	//@Cacheable("offer")
-	public Mono<Map<String, String>> getOffer(@PathVariable Long offerId) {
+	public Mono<Map<String, String>> getOffer(@PathVariable UUID offerIdParam) {
+		Long offerId = (offerIdParam.getLeastSignificantBits() % 1000l);
 		String url = "https://swapi.co/api/people/" + offerId + "?format=json";
 		System.out.println("Offer request: " + offerId);
 		Mono<Map<String, String>> rsp = webClient.get().uri(url).accept(MediaType.APPLICATION_JSON_UTF8)

@@ -14,7 +14,7 @@
 		<module>sales-catalog-service</module>
 		<module>sales-order-edit-commons</module>
 		<module>sales-order-edit-eventstore-service</module>
-		<module>sales-order-edit-logic-service</module>
+		<!-- <module>sales-order-edit-logic-service</module>  -->
 		<module>sales-order-frontend-service</module>
 	</modules>
 

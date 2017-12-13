@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import org.sego.moe.model.card.Card;
 import org.sego.moe.sales.order.edit.commons.model.OrderItemChange;
 import org.sego.moe.sales.order.edit.commons.model.SalesOrderEditEvent;
+import org.sego.moe.sales.order.edit.commons.model.utils.OrderItemAttributeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.integration.support.locks.DefaultLockRegistry;
 import org.springframework.integration.support.locks.LockRegistry;
@@ -40,7 +41,7 @@ public class CardOutputEventSink {
 		int size = storage.get(message.getSalesOrderId()).getCount();
 		if (size > 1) {
 			List<OrderItemChange> ois = message.getOrderItems().stream()
-					.filter(oi -> catalogService.getOffer(oi.getOfferId()).getMass() > 50)
+					.filter(oi -> catalogService.getOffer(OrderItemAttributeUtils.getAttrValue(oi, OrderItemChange.OFFER)).getMass() > 50)
 					.map(new Function<OrderItemChange, OrderItemChange>() {
 						@Override
 						public OrderItemChange apply(OrderItemChange t) {
@@ -60,8 +61,8 @@ public class CardOutputEventSink {
 				SalesOrderEditEvent ce = new SalesOrderEditEvent();
 				ce.setSalesOrderId(message.getSalesOrderId());
 				ce.setOrderItems(ois);
-				ce.setSourceEventId(message.getId());
-				webClient.post().uri("http://localhost:8861/v1/events").syncBody(ce).exchange().doOnSuccess(r -> System.out.println(ce.toString()));
+				ce.setId(message.getId());
+				webClient.post().uri("http://localhost:8861/v1/events").syncBody(ce).exchange().doOnSuccess(r -> System.out.println(ce.toString())).subscribe();
 			}
 		}
 	}

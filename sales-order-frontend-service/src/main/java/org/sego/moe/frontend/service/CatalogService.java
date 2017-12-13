@@ -1,6 +1,7 @@
 package org.sego.moe.frontend.service;
 
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Function;
 
 import org.sego.moe.frontend.FrontendConfig;
@@ -24,7 +25,7 @@ public class CatalogService {
 	private WebClient webClient;
 
 	@Cacheable("offer")
-	public Mono<Offer> getOffer(Long offerId) {
+	public Mono<Offer> getOffer(UUID offerId) {
 		System.out.println(config.getCatalog());
 		return webClient.get().uri(config.getCatalog() + "/v1/offer/" + offerId).accept(MediaType.APPLICATION_JSON_UTF8)
 				.exchange().log().flatMap(rsp -> rsp.bodyToMono(new ParameterizedTypeReference<Map<String, String>>() {

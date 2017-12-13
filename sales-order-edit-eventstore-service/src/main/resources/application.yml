@@ -8,5 +8,5 @@ spring:
       database: sales-order-edit-eventstore-service-db  
 eventstore:
   consumer:
-    - http://localhost:8871/v1/events
+#    - http://localhost:8871/v1/events
     - http://localhost:8873/v1/events

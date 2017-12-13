@@ -1,29 +1,29 @@
 package org.sego.moe.sales.order.edit.commons.model;
 
 import java.util.Map;
+import java.util.UUID;
 
 public class OrderItemChange {
 	
-	public static final String TOP_PARENT_ID = "top";
+	public static final Long ITEM_TYPE = 50l;
+	public static final Long OFFER = 100l;
+	public static final Long QUANTITY = 200l;
 	
-	private String id;
-	private Long offerId;
-	private int quantity;
-	private String parentId;
-	
+	private UUID id;
+	private UUID parentId;
 	private Map<Long, Object> attributes;
 	
-	public String getId() {
+	public UUID getId() {
 		return id;
 	}
-	public void setId(String id) {
+	public void setId(UUID id) {
 		this.id = id;
 	}
-	public Long getOfferId() {
-		return offerId;
+	public UUID getParentId() {
+		return parentId;
 	}
-	public void setOfferId(Long offerId) {
-		this.offerId = offerId;
+	public void setParentId(UUID parentId) {
+		this.parentId = parentId;
 	}
 	public Map<Long, Object> getAttributes() {
 		return attributes;
@@ -31,17 +31,12 @@ public class OrderItemChange {
 	public void setAttributes(Map<Long, Object> attributes) {
 		this.attributes = attributes;
 	}
-	public int getQuantity() {
-		return quantity;
+	
+	
+	@Override
+	public String toString() {
+		return "OrderItemChange [id=" + id + ", parentId=" + parentId + ", attributes=" + attributes + "]";
 	}
-	public void setQuantity(int quantity) {
-		this.quantity = quantity;
-	}
-	public String getParentId() {
-		return parentId;
-	}
-	public void setParentId(String parentId) {
-		this.parentId = parentId;
-	}
-
+	
+	
 }

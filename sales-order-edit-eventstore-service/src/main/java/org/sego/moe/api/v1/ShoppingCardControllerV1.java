@@ -1,5 +1,7 @@
 package org.sego.moe.api.v1;
 
+import java.util.UUID;
+
 import org.sego.moe.sales.order.edit.commons.model.SalesOrderEditEvent;
 import org.sego.moe.service.ShoppingCardService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +28,7 @@ public class ShoppingCardControllerV1 {
     }
     
     @GetMapping(path = "/events/{salesOrderId}")
-    public Flux<SalesOrderEditEvent> getSalesOrderEvents(@PathVariable Long salesOrderId) {
+    public Flux<SalesOrderEditEvent> getSalesOrderEvents(@PathVariable UUID salesOrderId) {
     	System.out.println("getSalesOrderEvents " + salesOrderId);
     	return shoppingCardService.getSalesOrderEvents(salesOrderId);
     }

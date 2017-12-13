@@ -1,7 +1,6 @@
 package org.sego.moe.frontend.service;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -16,6 +15,8 @@ import org.sego.moe.frontend.model.OrderItem;
 import org.sego.moe.frontend.model.SalesOrder;
 import org.sego.moe.sales.order.edit.commons.model.OrderItemChange;
 import org.sego.moe.sales.order.edit.commons.model.SalesOrderEditEvent;
+import org.sego.moe.sales.order.edit.commons.model.utils.OrderItemAttributeUtils;
+import org.sego.moe.sales.order.edit.commons.model.utils.OrderItemChangeBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.integration.support.locks.DefaultLockRegistry;
 import org.springframework.integration.support.locks.LockRegistry;
@@ -23,27 +24,26 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import reactor.core.publisher.ConnectableFlux;
-import reactor.core.publisher.Mono;
 
 @Service
 public class QuotationService {
 
-	Map<Long, SalesOrder> storage = new ConcurrentHashMap<>();
+	Map<UUID, SalesOrder> storage = new ConcurrentHashMap<>();
 
 	LockRegistry lockRegistry = new DefaultLockRegistry();
 	
 	@Autowired
 	private WebClient webClient;
 
-	@Autowired
-	private CatalogService catalogService;
+	//@Autowired
+	//private CatalogService catalogService;
 
 	public void receiveMessage(SalesOrderEditEvent message) {
 		System.out.println("receiveMessage: " + message);
 		applyEvent(message);
 	}
 
-	public SalesOrder getSalesOrder(Long salesOrderId) {
+	public SalesOrder getSalesOrder(UUID salesOrderId) {
 		Lock lock = lockRegistry.obtain(salesOrderId);
 		try {
 			lock.lock();
@@ -57,19 +57,17 @@ public class QuotationService {
 		}
 	}
 
-	public void addOrderItem(Long id, String parentOrderItemId, OrderItem orderItem) {
+	public void addOrderItem(UUID id, String parentOrderItemId, OrderItem orderItem) {
 		System.out.println("addOrderItem");
-		OrderItemChange oi = new OrderItemChange();
-		oi.setOfferId(Long.valueOf(orderItem.getOfferId()));
-		oi.setId(UUID.randomUUID().toString());
-		Map<Long, Object> attributes = new HashMap<>();
-		oi.setParentId(parentOrderItemId == null ? OrderItemChange.TOP_PARENT_ID : parentOrderItemId);
-		oi.setQuantity(orderItem.getQuantity() == null ? 1 : orderItem.getQuantity());
-		oi.setAttributes(attributes);
+		OrderItemChangeBuilder builder = new OrderItemChangeBuilder();
+		builder.attribute(OrderItemChange.OFFER, orderItem.getOfferId());
+		builder.attribute(OrderItemChange.QUANTITY, orderItem.getQuantity() == null ? 1 : orderItem.getQuantity());
+		builder.parent(id);
+
 
 		SalesOrderEditEvent event = new SalesOrderEditEvent();
 		event.setSalesOrderId(id);
-		event.setOrderItems(Collections.singletonList(oi));
+		event.setOrderItems(Collections.singletonList(builder.build()));
 		System.out.println("Send: " + event);
 		webClient.post().uri("http://localhost:8861/v1/events").syncBody(event).exchange().log().doFinally(cr -> System.out.println(cr)).subscribe(cr -> System.out.println("Successfuly send"));
 	}
@@ -82,7 +80,7 @@ public class QuotationService {
 		}
 		card.setEventCount(card.getEventCount() + 1);
 		List<OrderItem> ois = message.getOrderItems().stream().map(oic -> mapOrderItem(oic))
-				.filter(oi -> oi.getParentId() == null).collect(Collectors.toList());
+				.filter(oi -> oi.getParentId().equals(message.getSalesOrderId())).collect(Collectors.toList());
 		card.getOrderItems().addAll(ois);
 
 		card.getOrderItems().stream().forEach(new Consumer<OrderItem>() {
@@ -116,11 +114,10 @@ public class QuotationService {
 		}
 	}
 
-	private SalesOrder restoreFromEvents(Long id) {
+	private SalesOrder restoreFromEvents(UUID id) {
 		SalesOrder so = new SalesOrder();
-		ConnectableFlux<SalesOrderEditEvent> events = webClient.get().uri("http://localhost:8861/v1/events/" + id).retrieve().bodyToFlux(SalesOrderEditEvent.class).log().doFinally(st -> System.out.println(st)).publish();
+		ConnectableFlux<SalesOrderEditEvent> events = webClient.get().uri("http://localhost:8861/v1/events/" + id).retrieve().bodyToFlux(SalesOrderEditEvent.class).log("restoreFromEvents").doFinally(st -> System.out.println(st)).publish();
 		System.out.println("restoreFromEvents before block " + id);
-		events.log();
 		//events.autoConnect(1);
 		events.subscribe(o -> applyEventToSalesOrder(o, so));
 		events.connect();
@@ -138,17 +135,18 @@ public class QuotationService {
 	private OrderItem mapOrderItem(OrderItemChange oi) {
 		OrderItem orderItem = new OrderItem();
 		orderItem.setId(oi.getId());
-		orderItem.setOfferId(oi.getOfferId().toString());
-		orderItem.setQuantity(oi.getQuantity());
-		orderItem.setReason(oi.getAttributes() != null ? (String)oi.getAttributes().get(10l) : null);
-		orderItem.setParentId(OrderItemChange.TOP_PARENT_ID.equals(oi.getParentId()) ? null : oi.getParentId());
-		catalogService.getOffer(oi.getOfferId()).subscribe(new Consumer<Offer>() {
+		//UUID offerId = (UUID) OrderItemAttributeUtils.getAttrValue(oi, OrderItemChange.OFFER);
+		orderItem.setOfferId((UUID.fromString((String) OrderItemAttributeUtils.getAttrValue(oi, OrderItemChange.OFFER))));
+		orderItem.setQuantity((Integer) OrderItemAttributeUtils.getAttrValue(oi, OrderItemChange.QUANTITY));
+		orderItem.setReason((String) OrderItemAttributeUtils.getAttrValue(oi, 10l));
+		orderItem.setParentId(oi.getParentId());
+/*		catalogService.getOffer(offerId).subscribe(new Consumer<Offer>() {
 			@Override
 			public void accept(Offer offer) {
 				orderItem.setName(offer.getName());
 				orderItem.setDescription(offer.getDescription());
 			}
-		});
+		});*/
 		return orderItem;
 	}
 }
