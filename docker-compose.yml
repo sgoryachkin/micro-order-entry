@@ -1,17 +1,26 @@
-rabbitmq:
-  image: rabbitmq:management
-  ports:
-  - 5672:5672
-  - 15672:15672
+#rabbitmq:
+#  image: rabbitmq:management
+#  ports:
+#  - 5672:5672
+#  - 15672:15672
 mongo:
   image: mongo:3.4
   ports:
   - 27017:27017
-consul:
-  image: consul
-  ports:
-  - 8500:8500
+#consul:
+#  image: consul
+#  ports:
+#  - 8500:8500
 redis:
   image: redis:4
   ports:
    - 6379:6379
+clickhouse-server:
+  image: yandex:clickhouse-server
+  ports:
+  - 9000:9000
+  - 8123:8123
+#clickhouse-client:
+#  image: yandex:clickhouse-client
+#  ports:
+#  - 00:00
