@@ -16,11 +16,11 @@ redis:
   ports:
    - 6379:6379
 clickhouse-server:
-  image: yandex:clickhouse-server
+  image: yandex/clickhouse-server:1.1
   ports:
   - 9000:9000
   - 8123:8123
 #clickhouse-client:
-#  image: yandex:clickhouse-client
+#  image: clickhouse-client:1.1
 #  ports:
 #  - 00:00
