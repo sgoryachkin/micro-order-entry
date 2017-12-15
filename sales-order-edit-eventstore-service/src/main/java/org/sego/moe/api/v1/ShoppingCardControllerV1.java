@@ -27,10 +27,21 @@ public class ShoppingCardControllerV1 {
         shoppingCardService.addEditSalesOrderEvent(cartEvent);
     }
     
+    @GetMapping(path = "/events/test")
+    public void addCartEvent() {
+    	SalesOrderEditEvent soEvent = new SalesOrderEditEvent();
+    	soEvent.setSalesOrderId(UUID.randomUUID());
+    	for (int i = 0; i < 10000; i++) {
+    		shoppingCardService.addEditSalesOrderEvent(soEvent);
+		}
+        shoppingCardService.addEditSalesOrderEvent(soEvent);
+    }
+    
     @GetMapping(path = "/events/{salesOrderId}")
     public Flux<SalesOrderEditEvent> getSalesOrderEvents(@PathVariable UUID salesOrderId) {
     	System.out.println("getSalesOrderEvents " + salesOrderId);
     	return shoppingCardService.getSalesOrderEvents(salesOrderId);
     }
+    
 
 }

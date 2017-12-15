@@ -12,5 +12,7 @@ public interface SalesOrderMessageRepository {
 	Mono<SalesOrderEditEvent> insert(SalesOrderEditEvent event);
 	
 	Flux<SalesOrderEditEvent> findBySalesOrderId(UUID cardId);
+	
+	Flux<SalesOrderEditEvent> findBySalesOrderId(UUID cardId, long fromTime);
 
 }

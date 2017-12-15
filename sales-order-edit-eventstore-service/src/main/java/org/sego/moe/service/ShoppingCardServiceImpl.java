@@ -25,13 +25,23 @@ public class ShoppingCardServiceImpl implements ShoppingCardService {
 	
 	@Override
 	public void addEditSalesOrderEvent(SalesOrderEditEvent cartEvent) {
-    	LOGGER.debug("addEditSalesOrderEvent: " + cartEvent.toString());
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Write record: " + cartEvent.toString());
+		}
+    	cartEvent.setRecordTime(System.nanoTime());
     	Mono<SalesOrderEditEvent> event = messageRepository.insert(cartEvent);
     	cardOutputEventSource.sendMessage(event).subscribe();
     }
     
 	@Override
     public Flux<SalesOrderEditEvent> getSalesOrderEvents(UUID salesOrderId) {
+    	return messageRepository.findBySalesOrderId(salesOrderId);
+    }
+	
+	@Override
+    public Flux<SalesOrderEditEvent> getSalesOrderEvents(UUID salesOrderId, Long fromTime) {
+		//Example<Person> example = Example.of(SalesOrderEditEvent);
+		//repo.findAll(example);
     	return messageRepository.findBySalesOrderId(salesOrderId);
     }
 

@@ -20,4 +20,5 @@ public class ShoppingCartApplication {
 	WebClient webClient() {
 		return WebClient.create();
 	}
+
 }

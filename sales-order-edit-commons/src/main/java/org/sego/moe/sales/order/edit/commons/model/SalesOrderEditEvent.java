@@ -24,6 +24,11 @@ public class SalesOrderEditEvent {
 	private UUID chainId;
 	
 	/**
+	 * ID of first event of Chain
+	 */
+	private Long recordTime;
+	
+	/**
 	 * Originator service of this event
 	 */
 	private String eventOriginatorId;
@@ -140,10 +145,67 @@ public class SalesOrderEditEvent {
 
 	@Override
 	public String toString() {
-		return "SalesOrderEditEvent [id=" + id + ", parentId=" + parentId + ", chainId=" + chainId
-				+ ", eventOriginatorId=" + eventOriginatorId + ", eventChainOriginatorId=" + eventChainOriginatorId
-				+ ", eventNumber=" + eventNumber + ", eventNumberOfChain=" + eventNumberOfChain + ", salesOrderId="
-				+ salesOrderId + ", orderItems=" + orderItems + ", orderItemsDelete=" + orderItemsDelete + "]";
+		StringBuilder builder = new StringBuilder();
+		builder.append("SalesOrderEditEvent [");
+		if (id != null) {
+			builder.append("id=");
+			builder.append(id);
+			builder.append(", ");
+		}
+		if (parentId != null) {
+			builder.append("parentId=");
+			builder.append(parentId);
+			builder.append(", ");
+		}
+		if (chainId != null) {
+			builder.append("chainId=");
+			builder.append(chainId);
+			builder.append(", ");
+		}
+		if (recordTime != null) {
+			builder.append("recordTime=");
+			builder.append(recordTime);
+			builder.append(", ");
+		}
+		if (eventOriginatorId != null) {
+			builder.append("eventOriginatorId=");
+			builder.append(eventOriginatorId);
+			builder.append(", ");
+		}
+		if (eventChainOriginatorId != null) {
+			builder.append("eventChainOriginatorId=");
+			builder.append(eventChainOriginatorId);
+			builder.append(", ");
+		}
+		builder.append("eventNumber=");
+		builder.append(eventNumber);
+		builder.append(", eventNumberOfChain=");
+		builder.append(eventNumberOfChain);
+		builder.append(", ");
+		if (salesOrderId != null) {
+			builder.append("salesOrderId=");
+			builder.append(salesOrderId);
+			builder.append(", ");
+		}
+		if (orderItems != null) {
+			builder.append("orderItems=");
+			builder.append(orderItems);
+			builder.append(", ");
+		}
+		if (orderItemsDelete != null) {
+			builder.append("orderItemsDelete=");
+			builder.append(orderItemsDelete);
+		}
+		builder.append("]");
+		return builder.toString();
+	}
+
+	public Long getRecordTime() {
+		return recordTime;
+	}
+
+	public void setRecordTime(Long recordTime) {
+		this.recordTime = recordTime;
 	}
 
 	
