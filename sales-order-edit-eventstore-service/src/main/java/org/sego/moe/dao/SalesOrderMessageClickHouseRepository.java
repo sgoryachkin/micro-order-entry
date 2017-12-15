@@ -67,7 +67,6 @@ public class SalesOrderMessageClickHouseRepository implements SalesOrderMessageR
 								@Override
 								public void processRow(ResultSet arg0) throws SQLException {
 									subscriber.onNext(fromString(arg0.getString("body")));
-									System.out.println("in progress");
 								}
 							});
 				} catch (Exception e) {

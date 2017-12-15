@@ -20,7 +20,7 @@ clickhouse-server:
   ports:
   - 9000:9000
   - 8123:8123
-#clickhouse-client:
-#  image: clickhouse-client:1.1
-#  ports:
-#  - 00:00
+cassandra:
+  image: cassandra:3
+  ports:
+  - 9042:9042  
