@@ -22,5 +22,7 @@ clickhouse-server:
   - 8123:8123
 cassandra:
   image: cassandra:3
+  command: bash -c "sleep 20 && echo Creating keyspace soeventstore && cqlsh -e 'CREATE KEYSPACE IF NOT EXISTS soeventstore' && sleep infinity"
   ports:
   - 9042:9042  
+  
