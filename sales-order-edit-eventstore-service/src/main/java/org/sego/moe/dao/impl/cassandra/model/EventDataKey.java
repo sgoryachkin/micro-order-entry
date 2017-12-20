@@ -1,4 +1,4 @@
-package org.sego.moe.dao.cassandra.model;
+package org.sego.moe.dao.impl.cassandra.model;
 
 import java.io.Serializable;
 import java.util.UUID;

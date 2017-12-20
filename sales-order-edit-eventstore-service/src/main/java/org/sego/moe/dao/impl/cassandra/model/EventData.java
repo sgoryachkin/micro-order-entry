@@ -1,4 +1,4 @@
-package org.sego.moe.dao.cassandra.model;
+package org.sego.moe.dao.impl.cassandra.model;
 
 import org.springframework.data.cassandra.core.mapping.Column;
 import org.springframework.data.cassandra.core.mapping.PrimaryKey;

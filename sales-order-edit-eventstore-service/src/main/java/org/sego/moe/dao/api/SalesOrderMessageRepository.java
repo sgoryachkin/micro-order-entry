@@ -1,4 +1,4 @@
-package org.sego.moe.dao;
+package org.sego.moe.dao.api;
 
 import java.util.UUID;
 

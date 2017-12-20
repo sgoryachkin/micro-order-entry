@@ -1,11 +1,12 @@
-package org.sego.moe.dao;
+package org.sego.moe.dao.impl.cassandra;
 
 import java.io.IOException;
 import java.util.UUID;
 import java.util.function.Function;
 
-import org.sego.moe.dao.cassandra.model.EventData;
-import org.sego.moe.dao.cassandra.model.EventDataKey;
+import org.sego.moe.dao.api.SalesOrderMessageRepository;
+import org.sego.moe.dao.impl.cassandra.model.EventData;
+import org.sego.moe.dao.impl.cassandra.model.EventDataKey;
 import org.sego.moe.sales.order.edit.commons.model.SalesOrderEditEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.cassandra.core.ReactiveCassandraOperations;

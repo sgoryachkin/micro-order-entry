@@ -2,7 +2,7 @@ package org.sego.moe.service;
 
 import java.util.UUID;
 
-import org.sego.moe.dao.SalesOrderMessageRepository;
+import org.sego.moe.dao.api.SalesOrderMessageRepository;
 import org.sego.moe.sales.order.edit.commons.model.SalesOrderEditEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
