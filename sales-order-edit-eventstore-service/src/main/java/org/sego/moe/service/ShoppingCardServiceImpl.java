@@ -2,7 +2,7 @@ package org.sego.moe.service;
 
 import java.util.UUID;
 
-import org.sego.moe.dao.SalesOrderMessageRepository;
+import org.sego.moe.dao.api.SalesOrderMessageRepository;
 import org.sego.moe.sales.order.edit.commons.model.SalesOrderEditEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,9 +28,10 @@ public class ShoppingCardServiceImpl implements ShoppingCardService {
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("Write record: " + cartEvent.toString());
 		}
-    	cartEvent.setRecordTime(System.nanoTime());
+		cartEvent.setRecordTime(System.currentTimeMillis());
     	Mono<SalesOrderEditEvent> event = messageRepository.insert(cartEvent);
-    	cardOutputEventSource.sendMessage(event).subscribe();
+    	event.doOnError(e -> LOGGER.error(e.getMessage(), e)).subscribe();
+    	//cardOutputEventSource.sendMessage(event).doOnError(e -> LOGGER.error(e.getMessage(), e)).subscribe();
     }
     
 	@Override
@@ -40,9 +41,17 @@ public class ShoppingCardServiceImpl implements ShoppingCardService {
 	
 	@Override
     public Flux<SalesOrderEditEvent> getSalesOrderEvents(UUID salesOrderId, Long fromTime) {
-		//Example<Person> example = Example.of(SalesOrderEditEvent);
-		//repo.findAll(example);
-    	return messageRepository.findBySalesOrderId(salesOrderId);
+    	return messageRepository.findBySalesOrderId(salesOrderId, fromTime);
     }
+
+	@Override
+	public Mono<Long> getCountSalesOrderEvents(UUID salesOrderId) {
+		return messageRepository.countBySalesOrderId(salesOrderId);
+	}
+
+	@Override
+	public Mono<Long> getCountSalesOrderEvents(UUID salesOrderId, Long fromTime) {
+		return messageRepository.countBySalesOrderId(salesOrderId, fromTime);
+	}
 
 }
