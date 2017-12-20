@@ -14,5 +14,9 @@ public interface SalesOrderMessageRepository {
 	Flux<SalesOrderEditEvent> findBySalesOrderId(UUID cardId);
 	
 	Flux<SalesOrderEditEvent> findBySalesOrderId(UUID cardId, long fromTime);
+	
+	Mono<Long> countBySalesOrderId(UUID cardId);
+	
+	Mono<Long> countBySalesOrderId(UUID cardId, long fromTime);
 
 }
