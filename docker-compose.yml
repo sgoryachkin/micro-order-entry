@@ -3,10 +3,10 @@
 #  ports:
 #  - 5672:5672
 #  - 15672:15672
-mongo:
-  image: mongo:3.4
-  ports:
-  - 27017:27017
+#mongo:
+#  image: mongo:3.4
+#  ports:
+#  - 27017:27017
 #consul:
 #  image: consul
 #  ports:
@@ -15,14 +15,18 @@ redis:
   image: redis:4
   ports:
    - 6379:6379
-clickhouse-server:
-  image: yandex/clickhouse-server:1.1
-  ports:
-  - 9000:9000
-  - 8123:8123
+#clickhouse-server:
+#  image: yandex/clickhouse-server:1.1
+#  ports:
+#  - 9000:9000
+#  - 8123:8123
 cassandra:
   image: cassandra:3
-  command: bash -c "sleep 20 && echo Creating keyspace soeventstore && cqlsh -e 'CREATE KEYSPACE IF NOT EXISTS soeventstore' && sleep infinity"
   ports:
-  - 9042:9042  
-  
+  - 9042:9042
+  - 9160:9160
+setupcassandra:
+  build: cassandra-docker
+  links:
+    - cassandra
+  command: bash -c "sleep 40 && echo Creating keyspace && cqlsh cassandra -f init.cql && sleep infinity"
