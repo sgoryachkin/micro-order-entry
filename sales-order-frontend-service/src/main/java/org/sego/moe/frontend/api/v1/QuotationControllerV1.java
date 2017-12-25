@@ -30,12 +30,14 @@ public class QuotationControllerV1 {
     	return quotationService.getSalesOrder(quoteId);
     }
     
-    @GetMapping(path = "/quote/{quoteId}/addtest")
-    public String addTest(@PathVariable UUID quoteId) {
-    	OrderItem oi = new OrderItem();
-    	oi.setOfferId(UUID.fromString("5f280bf1-23e2-4728-9987-68f91e67e129"));
-    	oi.setQuantity(5);
-    	quotationService.addOrderItem(quoteId, null, oi);
+    @GetMapping(path = "/quote/{quoteId}/addtest/{count}")
+    public String addTest(@PathVariable UUID quoteId, @PathVariable int count) {
+    	for (int i = 0; i < count; i++) {
+        	OrderItem oi = new OrderItem();
+        	oi.setOfferId(UUID.fromString("5f280bf1-23e2-4728-9987-68f91e67e129"));
+        	oi.setQuantity(5);
+        	quotationService.addOrderItem(quoteId, null, oi);
+		}
     	return "success";
     }
     

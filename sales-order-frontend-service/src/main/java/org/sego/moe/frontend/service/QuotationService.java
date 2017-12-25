@@ -46,14 +46,14 @@ public class QuotationService {
 	public SalesOrder getSalesOrder(UUID salesOrderId) {
 		Lock lock = lockRegistry.obtain(salesOrderId);
 		try {
-			lock.lock();
+			//lock.lock();
 			SalesOrder card = storage.get(salesOrderId);
 			if (card == null || card.getEventCount() == 0) {
 				storage.put(salesOrderId, restoreFromEvents(salesOrderId));
 			}
 			return storage.get(salesOrderId);
 		} finally {
-			lock.unlock();
+			//lock.unlock();
 		}
 	}
 

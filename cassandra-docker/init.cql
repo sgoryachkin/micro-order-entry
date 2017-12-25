@@ -1,1 +1,0 @@
-CREATE KEYSPACE IF NOT EXISTS soeventstore WITH REPLICATION={'class':'SimpleStrategy','replication_factor':1};
